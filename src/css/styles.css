@@ -1,4 +1,4 @@
-* {
+/* * {
   box-sizing: border-box;
 }
 
@@ -29,4 +29,8 @@ body {
 .country-list,
 .country-info__list {
   list-style: none;
+} */
+
+.invisible {
+  display: none;
 }

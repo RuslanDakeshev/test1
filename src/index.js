@@ -1,121 +1,71 @@
+const form = document.querySelector('form');
+const list = document.querySelector('.list');
+const button = document.querySelector('.more');
 
+// const BASE_URL = 'https://app.ticketmaster.com/discovery/v2/events.json';
+// const API = '9cTjAjlRB53wyhAFk5VzXcBu5GiPU6fK';
 
-import './css/styles.css';
-import { fetchCountries } from './fetchCountries';
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
-import debounce from 'lodash.debounce';
+const BASE_URL = 'https://pixabay.com/api/';
+const API = '30624593-67a024fcb44d725cda2d85f07';
 
-const DEBOUNCE_DELAY = 300;
-const refs = {
-  countriesNameInput: document.querySelector('#search-box'),
-  countriesList: document.querySelector('.country-list'),
-  countriesInfo: document.querySelector('.country-info'),
-};
+function fetchEvent() {
+  const params = new URLSearchParams({
+    key: API,
+  });
 
-refs.countriesNameInput.addEventListener(
-  'input',
-  debounce(onInputChange, DEBOUNCE_DELAY)
-);
-
-function onInputChange(event) {
-    const countryName = event.target.value.trim();
-    
-
-  if (!countryName) {
-    clearTemplate();
-    return;
-  }
-
-  fetchCountries(countryName)
-    .then(data => {
-      if (data.length > 10) {
-        specificNameInfo();
-        clearTemplate();
-        return;
+  return fetch(`${BASE_URL}?${params}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(response.status);
       }
-      renderTemplate(data);
+      return response.json();
     })
-    .catch(error => {
-      clearTemplate();
-      errorWarn();
-    });
+    .catch(error => console.log(error));
 }
 
-function renderTemplate(elements) {
-  let template = '';
-  let refsTemplate = '';
-  clearTemplate();
-
-  if (elements.length === 1) {
-    template = createTemplateItem(elements);
-    refsTemplate = refs.countriesInfo;
-    
-  } else {
-    template = createTemplateItemList(elements);
-    refsTemplate = refs.countriesList;
-  }
-
-  drawTemplate(refsTemplate, template);
+function getEvents() {
+  fetchEvent().then(data => {
+    const events = data.hits;
+    renderEvents(events);
+  });
 }
+getEvents();
 
-function createTemplateItem(element) {
-  return element.map(
-    ({ name, capital, population, flags, languages }) =>
-      `
-      <img
-        src="${flags.svg}" 
-        alt="${name.official}" 
-        width="120" 
-        height="60">
-      <h1 class="country-info__title">${name.official}</h1>
-      <ul class="country-info__list">
-          <li class="country-info__item">
-          <span>Capital:</span>
-        ${capital}
-          </li>
-          <li class="country-info__item">
-          <span>Population:</span>
-          ${population}
-          </li>
-          <li class="country-info__item">
-          <span>Languages:</span>
-          ${Object.values(languages)}
-          </li>
-      </ul>
-  `
-  );
+function renderEvents(images) {
+  const markup = images.map(
+    ({
+      webformatURL,
+      largeImageURL,
+      tags,
+      likes,
+      views,
+      comments,
+      downloads,
+    }) => {
+      return `<div class="photo-card">
+    <a href="${webformatURL}">
+      <img class="photo-card__img" src="${largeImageURL}" alt="${tags}" loading="lazy" width="320" height="212" />
+      </a>
+      <div class="info">
+        <p class="info-item">
+          <b>Likes</b>
+          <span>${likes}</span>
+        </p>
+        <p class="info-item">
+          <b>Views</b>
+          <span>${views}</span>
+        </p>
+        <p class="info-item">
+          <b>Comments</b>
+          <span>${comments}</span>
+        </p>
+        <p class="info-item">
+          <b>Downloads</b>
+          <span>${downloads}</span>
+        </p>
+      </div>
+    </div>`;
+    }
+  ).join('')
+  list.innerHTML = markup
 }
-
-function createTemplateItemList(elements) {
-  return elements
-    .map(
-      ({ name, flags }) => `
-      <li class="country-list__item">
-        <img class="country-list__img" 
-          src="${flags.svg}" 
-          alt="${name.official}" 
-          width="60" 
-          height="40">
-        ${name.official}
-      </li>`
-    )
-    .join('');
-}
-
-function specificNameInfo() {
-  Notify.info('Too many matches found. Please enter a more specific name.');
-}
-
-function errorWarn() {
-  Notify.failure(`Oops, there is no country with that name`);
-}
-
-function clearTemplate() {
-  refs.countriesInfo.innerHTML = '';
-  refs.countriesList.innerHTML = '';
-}
-
-function drawTemplate(refs, markup) {
-  refs.innerHTML = markup;
-}
-
