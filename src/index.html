@@ -10,15 +10,28 @@
 </head>
 
 <body>
-  <form>
+  <!-- <form>
     <label>
       Search event:
       <input type="text" name="query">
       <button>Search</button>
     </label>
-  </form>
+  </form> -->
+
+  <form class="search-form" id="search-form">
+  <input
+    type="text"
+    name="searchQuery"
+    autocomplete="off"
+    placeholder="Search images..."
+  />
+  <button class="search-form__btn" type="submit">Search</button>
+</form>
   <ul class="list"></ul>
-  <button class="more invisible">Load more</button>
+  <div class="gallery"></div>
+    <div class="wrapper"></div>
+  <!-- <button class="more invisible">Load more</button> -->
+  <a class="to-top is-hidden">TOP</a>
   <script src="./index.js" type="module"></script>
 </body>
 
