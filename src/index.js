@@ -480,8 +480,8 @@
 
 
 
-import { EventsApi } from './eventsApi.js';
-// import LoadMoreBtn from './js/load-more';
+import  EventsApi  from './eventsApi.js';
+import LoadMoreBtn from './load-more.js';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
@@ -513,49 +513,65 @@ window.addEventListener('scroll', onScrollToTopBtn);
 function onSearch(e) {
   e.preventDefault();
 
-  eventsApi.query = e.currentTarget.elements.searchQuery.value.trim();
-
-  eventsApi.resetLoadedHits();
-  eventsApi.resetPage();
-  // loadMoreBtn.show();
-  // loadMoreBtn.disable();
-  clearGelleryContainer();
-
-  if (!eventsApi.query) {
-    return erorrQuery();
-  }
-
-  eventsApi.fetchEvent().then(({ hits, totalHits }) => {
-    if (!hits.length) {
-      // setTimeout(() => {
-      //   loadMoreBtn.hide();
-      // }, 1_500);
-
+    //  eventsApi.query = e.currentTarget.elements.searchQuery.value.trim();
+      
+    eventsApi.query = e.target.elements.searchQuery.value;
+    // keyword = eventsApi.query;
+    pageToFetch = 1;
+    refs.galleryContainer.innerHTML = '';
+    if (!eventsApi.query) {
       return erorrQuery();
     }
 
-    observer.observe(refs.wrapper);
-    // loadMoreBtn.enable();
-    eventsApi.incrementLoadedHits(hits);
-    createGalleryMarkup(hits);
-    accessQuery(totalHits);
-    gallery.refresh();
+    
+    //   getEvents(pageToFetch, query);
+    // });
 
-    if (hits.length === totalHits) {
-      // loadMoreBtn.hide();
-      observer.unobserve(refs.wrapper);
-      endOfSearch();
-    }
-  });
 
-  observer.unobserve(refs.wrapper);
-}
+
+    eventsApi.resetLoadedHits();
+    eventsApi.resetPage();
+    // loadMoreBtn.show();
+    // loadMoreBtn.disable();
+    clearGelleryContainer();
+
+  }
+
+    // if (!eventsApi.query) {
+    //   return erorrQuery();
+    // }
+
+    eventsApi.fetchEvent().then(({ hits, totalHits }) => {
+      if (!hits.length) {
+        // setTimeout(() => {
+        //   loadMoreBtn.hide();
+        // }, 1_500);
+
+        return erorrQuery();
+      }
+
+      observer.observe(refs.wrapper);
+      // loadMoreBtn.enable();
+      eventsApi.incrementLoadedHits(hits);
+      createGalleryMarkup(hits);
+      accessQuery(totalHits);
+      gallery.refresh();
+
+      if (hits.length === totalHits) {
+        // loadMoreBtn.hide();
+        observer.unobserve(refs.wrapper);
+        endOfSearch();
+      }
+    });
+
+    observer.unobserve(refs.wrapper);
+  
 
 function onEntry(entries) {
   entries.forEach(entry => {
     if (entry.isIntersecting && eventsApi.query) {
-      imagesApiService
-        .fetchImages()
+      eventsApi
+        .fetchEvent()
         .then(({ hits, totalHits }) => {
           eventsApi.incrementLoadedHits(hits);
           if (totalHits <= eventsApi.loadedHits) {
@@ -685,3 +701,29 @@ function smoothScrollGallery() {
     behavior: 'smooth',
   });
 }
+
+// function getEvents(page, q) {
+//   fetchEvent(page, q).then(data => {
+//     const events = data.hits;
+//     // if (events) {
+//     //   renderEvents(events);
+//     // }
+//     // if (data.page.totalElements === 0) {
+//     //   button.classList.add('invisible');
+//     //   alert(`There are no events by keyword ${q}`)
+//     // }
+//     renderEvents(events);
+
+//     //если последняя страница-скрываем кнопку
+//     //  if (pageToFetch === totalPages) {
+//     //    button.classList.add('invisible');
+//     //    alert('Finish');
+//     //    return;
+//     //  }
+
+//     pageToFetch += 1;
+//     // if (data.page.totalPages > 1) {
+//     button.classList.remove('invisible');
+//     // }
+//   });
+// }
