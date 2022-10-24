@@ -590,14 +590,15 @@ function onEntry(entries) {
   });
 }
 
+
 // function onLoadMore() {
 //   loadMoreBtn.disable();
 
-//   imagesApiService.fetchImages().then(({ hits, totalHits }) => {
-//     imagesApiService.incrementLoadedHits(hits);
+//   eventsApi.fetchImages().then(({ hits, totalHits }) => {
+//     eventsApi.incrementLoadedHits(hits);
 //     loadMoreBtn.enable();
 
-//     if (totalHits <= imagesApiService.loadedHits) {
+//     if (totalHits <= eventsApi.loadedHits) {
 //       loadMoreBtn.hide();
 //       endOfSearch();
 //     }
